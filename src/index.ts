@@ -12,21 +12,17 @@ app.get("/paste/:format/:raw?", async (req, res, next) => {
     const pastes: string[] = [];
     console.log("===============");
     for (let i = 0; i < 6; i++) {
-      const pokemonIndex = Math.floor(Math.random() * pokemons.length);
+      const pokemonIndex = randomIndex(pokemons.length);
       const sets = Object.keys(data[pokemons[pokemonIndex]]);
-      const setIndex = Math.floor(Math.random() * sets.length);
+      const setIndex = randomIndex(sets.length);
       const set = data[pokemons[pokemonIndex]][sets[setIndex]];
       console.log(`#${i + 1} ${pokemons[pokemonIndex]} ${sets[setIndex]}`);
       let paste = `${pokemons[pokemonIndex]} @ ${
-        Array.isArray(set.item)
-          ? set.item[Math.floor(Math.random() * set.item.length)]
-          : set.item
+        Array.isArray(set.item) ? random(set.item) : set.item
       }`;
       if (set.ability) {
         paste += `\nAbility: ${
-          Array.isArray(set.ability)
-            ? set.ability[Math.floor(Math.random() * set.ability.length)]
-            : set.ability
+          Array.isArray(set.ability) ? random(set.ability) : set.ability
         }`;
       }
       paste += `\nLevel: 100`;
@@ -36,16 +32,30 @@ app.get("/paste/:format/:raw?", async (req, res, next) => {
       paste += `\nEVs: ${(Object.keys(set.evs) as (keyof BaseStats)[])
         .map((stat) => `${set.evs[stat]} ${mapBaseStatsNames[stat]}`)
         .join(" / ")}`;
-      paste += `\n${set.nature} Nature`;
+      paste += `\n${
+        Array.isArray(set.nature) ? random(set.nature) : set.nature
+      } Nature`;
+      const moves: string[] = [];
       set.moves.forEach((move) => {
-        let selectedMove: string;
+        let selectedMove: string | undefined = undefined;
         if (Array.isArray(move)) {
-          selectedMove = move[Math.floor(Math.random() * move.length)];
+          let moveIndex = randomIndex(move.length);
+          selectedMove = move[moveIndex];
+          // make sure we don't have the same move twice
+          let tries = 0;
+          while (moves.includes(selectedMove) && tries < 4) {
+            moveIndex = (moveIndex + 1) % move.length;
+            tries++;
+            selectedMove = move[moveIndex];
+          }
         } else {
           selectedMove = move;
         }
-        paste += `\n- ${selectedMove}`;
+        if (selectedMove) {
+          moves.push(selectedMove);
+        }
       });
+      paste += moves.map((move) => `\n- ${move}`).join("");
 
       pastes.push(paste);
     }
@@ -82,7 +92,7 @@ const mapBaseStatsNames: Record<keyof BaseStats, string> = {
 
 export type PkmnSet = {
   moves: (string | string[])[];
-  ability?: string;
+  ability?: string | string[];
   item: string | string[];
   nature: string | string[];
   ivs?: BaseStats;
@@ -103,3 +113,11 @@ const getJSONSets = memoizee(
     maxAge: 1000 * 60 * 60,
   }
 );
+
+function randomIndex(length: number) {
+  return Math.floor(Math.random() * length);
+}
+
+function random<T>(list: T[]): T {
+  return list[randomIndex(list.length)];
+}
