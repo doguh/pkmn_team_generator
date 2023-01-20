@@ -10,15 +10,24 @@ app.get("/paste/:format/:raw?", async (req, res, next) => {
     const data = await getJSONSets(req.params.format);
     const pokemons = Object.keys(data);
     const pastes: string[] = [];
+    console.log("===============");
     for (let i = 0; i < 6; i++) {
       const pokemonIndex = Math.floor(Math.random() * pokemons.length);
       const sets = Object.keys(data[pokemons[pokemonIndex]]);
       const setIndex = Math.floor(Math.random() * sets.length);
       const set = data[pokemons[pokemonIndex]][sets[setIndex]];
       console.log(`#${i + 1} ${pokemons[pokemonIndex]} ${sets[setIndex]}`);
-      let paste = `${pokemons[pokemonIndex]} @ ${set.item}`;
+      let paste = `${pokemons[pokemonIndex]} @ ${
+        Array.isArray(set.item)
+          ? set.item[Math.floor(Math.random() * set.item.length)]
+          : set.item
+      }`;
       if (set.ability) {
-        paste += `\nAbility: ${set.ability}`;
+        paste += `\nAbility: ${
+          Array.isArray(set.ability)
+            ? set.ability[Math.floor(Math.random() * set.ability.length)]
+            : set.ability
+        }`;
       }
       paste += `\nLevel: 100`;
       paste += `\nIVs: ${(Object.keys(mapBaseStatsNames) as (keyof BaseStats)[])
@@ -74,8 +83,8 @@ const mapBaseStatsNames: Record<keyof BaseStats, string> = {
 export type PkmnSet = {
   moves: (string | string[])[];
   ability?: string;
-  item: string;
-  nature: string;
+  item: string | string[];
+  nature: string | string[];
   ivs?: BaseStats;
   evs: BaseStats;
 };
