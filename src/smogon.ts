@@ -27,22 +27,25 @@ export const getJSONSets = memoizee(
   }
 );
 
-const formatsCombinations = [
-  "gen8nationaldexag",
-  "gen8nationaldex",
-  "gen8ubers",
-  "gen7ubers",
-  "gen8ou",
-  "gen7ou",
-];
+const extendFormats: Record<string, string[]> = {
+  gen8nationaldexag: [
+    "gen8nationaldex",
+    "gen8ubers",
+    "gen7ubers",
+    "gen8ou",
+    "gen7ou",
+  ],
+  gen8nationaldex: ["gen8ou", "gen7ou"],
+  gen8ubers: ["gen8ou"],
+  gen7ubers: ["gen7ou"],
+};
 
 export const getCombinedJSONSets = memoizee(
   async function getCombinedJSONSets(format: string): Promise<PkmnSets> {
-    const index = formatsCombinations.indexOf(format);
-    if (index === -1) {
+    if (!extendFormats[format]) {
       return getJSONSets(format);
     }
-    const formats = formatsCombinations.slice(index);
+    const formats = [format, ...extendFormats[format]];
     const sets = await Promise.all(formats.map(getJSONSets));
     return sets.reduce((acc, val) => {
       return {
