@@ -29,15 +29,19 @@ export const getJSONSets = memoizee(
 
 const extendFormats: Record<string, string[]> = {
   gen8nationaldexag: [
+    "gen8nationaldexag",
     "gen8nationaldex",
     "gen8ubers",
     "gen7ubers",
     "gen8ou",
     "gen7ou",
   ],
-  gen8nationaldex: ["gen8ou", "gen7ou"],
-  gen8ubers: ["gen8ou"],
-  gen7ubers: ["gen7ou"],
+  gen8nationaldex: ["gen8nationaldex", "gen8ou", "gen7ou"],
+  gen8nationaldexuu: ["gen8nationaldexuu", "gen8uu", "gen7uu"],
+  gen8nationaldexru: ["gen8ru", "gen7ru"],
+  gen8nationaldexnu: ["gen8nu", "gen7nu"],
+  gen8ubers: ["gen8ubers", "gen8ou"],
+  gen7ubers: ["gen7ubers", "gen7ou"],
 };
 
 export const getCombinedJSONSets = memoizee(
@@ -45,7 +49,7 @@ export const getCombinedJSONSets = memoizee(
     if (!extendFormats[format]) {
       return getJSONSets(format);
     }
-    const formats = [format, ...extendFormats[format]];
+    const formats = extendFormats[format];
     const sets = await Promise.all(formats.map(getJSONSets));
     return sets.reduce((acc, val) => {
       return {
