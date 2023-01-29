@@ -9,6 +9,15 @@ type Paste = {
 
 const leadMoves = ["Stealth Rock", "Sticky Web", "Spikes", "Toxic Spikes"];
 
+const smogonToPixelmonId: Record<string, string> = {
+  "Zygarde-10%": "Zygarde-ten_percent",
+  "Urshifu-Rapid-Strike": "Urshifu-RapidStrike",
+  "Necrozma-Dusk-Mane": "Necrozma-Dusk",
+  "Necrozma-Dawn-Wings": "Necrozma-Dawn",
+  "Calyrex-Shadow": "Calyrex-ShadowRider",
+  "Calyrex-Ice": "Calyrex-IceRider",
+};
+
 export function generateRandomPaste(from: PkmnSets): string {
   const pokemons = Object.keys(from);
   const pastes: Paste[] = [];
@@ -24,7 +33,8 @@ export function generateRandomPaste(from: PkmnSets): string {
     }
     const set = from[species][setName];
     console.log(`#${i + 1} ${species} ${setName}`);
-    let paste = `${species} @ ${
+    const pixelmonSpecies = smogonToPixelmonId[species] || species;
+    let paste = `${pixelmonSpecies} @ ${
       Array.isArray(set.item) ? random(set.item) : set.item
     }`;
     if (set.ability) {
