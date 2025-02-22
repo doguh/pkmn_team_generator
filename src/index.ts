@@ -8,7 +8,8 @@ const app = express();
 app.get("/paste/:format/:raw?", async (req, res, next) => {
   try {
     const data = await getCombinedJSONSets(req.params.format);
-    const paste = generateRandomPaste(data);
+    const level = req.query.level ? parseInt("" + req.query.level) : undefined;
+    const paste = generateRandomPaste(data, { level });
     res.set("content-type", "text/plain");
     res.send(paste);
   } catch (err) {

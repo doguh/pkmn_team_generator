@@ -18,7 +18,14 @@ const smogonToPixelmonId: Record<string, string> = {
   "Calyrex-Ice": "Calyrex-IceRider",
 };
 
-export function generateRandomPaste(from: PkmnSets): string {
+export type GeneratePasteOptions = {
+  level?: number;
+};
+
+export function generateRandomPaste(
+  from: PkmnSets,
+  options?: GeneratePasteOptions
+): string {
   const pokemons = Object.keys(from);
   const pastes: Paste[] = [];
 
@@ -42,7 +49,7 @@ export function generateRandomPaste(from: PkmnSets): string {
         Array.isArray(set.ability) ? random(set.ability) : set.ability
       }`;
     }
-    paste += `\nLevel: 100`;
+    paste += `\nLevel: ${options?.level || 100}`;
     const ivs = Array.isArray(set.ivs) ? random(set.ivs) : set.ivs;
     paste += `\nIVs: ${(Object.keys(mapBaseStatsNames) as (keyof BaseStats)[])
       .map((stat) => `${ivs?.[stat] || 31} ${mapBaseStatsNames[stat]}`)
