@@ -7,8 +7,8 @@ export type PkmnSet = {
   ability?: string | string[];
   item: string | string[];
   nature: string | string[];
-  ivs?: BaseStats;
-  evs: BaseStats;
+  ivs?: BaseStats | BaseStats[];
+  evs: BaseStats | BaseStats[];
 };
 
 export type PkmnSets = Record<string, Record<string, PkmnSet>>;

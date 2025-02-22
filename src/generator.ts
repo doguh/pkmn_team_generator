@@ -43,11 +43,13 @@ export function generateRandomPaste(from: PkmnSets): string {
       }`;
     }
     paste += `\nLevel: 100`;
+    const ivs = Array.isArray(set.ivs) ? random(set.ivs) : set.ivs;
     paste += `\nIVs: ${(Object.keys(mapBaseStatsNames) as (keyof BaseStats)[])
-      .map((stat) => `${set.ivs?.[stat] || 31} ${mapBaseStatsNames[stat]}`)
+      .map((stat) => `${ivs?.[stat] || 31} ${mapBaseStatsNames[stat]}`)
       .join(" / ")}`;
-    paste += `\nEVs: ${(Object.keys(set.evs) as (keyof BaseStats)[])
-      .map((stat) => `${set.evs[stat]} ${mapBaseStatsNames[stat]}`)
+    const evs = Array.isArray(set.evs) ? random(set.evs) : set.evs;
+    paste += `\nEVs: ${(Object.keys(evs) as (keyof BaseStats)[])
+      .map((stat) => `${evs[stat]} ${mapBaseStatsNames[stat]}`)
       .join(" / ")}`;
     paste += `\n${
       Array.isArray(set.nature) ? random(set.nature) : set.nature
